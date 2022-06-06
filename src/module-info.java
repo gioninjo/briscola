@@ -1,0 +1,2 @@
+module briscola_project {
+}
