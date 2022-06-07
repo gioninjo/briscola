@@ -1,14 +1,15 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
-public class Mazzo {
-	public static ArrayList<Carta> myMazzo = new ArrayList<Carta>();
+
+public class Mazzo implements IMazzo {
+	public ArrayList<Carta> myMazzo = new ArrayList<Carta>();
 	
+	//costruttore
 	public Mazzo() {
+		
 		for(Seme seme : Seme.values()) {
 			for(Valore valore: Valore.values()) {
 				myMazzo.add(new Carta(valore, seme));
@@ -24,7 +25,28 @@ public class Mazzo {
 		this.myMazzo = mazzo;
 	}
 	
-	public void Shuffle() {
+	//mescola il mazzzo
+	public void shuffle() {
 		Collections.shuffle(myMazzo);
+	}
+	
+	//prende la prima carta, la ritorna e la rimuove
+	public Carta takeACard() {
+		return myMazzo.remove(0);
+	}
+	
+	
+	
+	//prende una carta in cima, la mostra e la mette i n  fondo
+	public Carta pushACard() {
+		Carta cardShown = myMazzo.remove(0);
+		myMazzo.add(cardShown);
+		return cardShown;
+	}
+	
+	public void printMazzo() {
+		for(Carta c : myMazzo) {
+			System.out.println(c);
+		}
 	}
 }
