@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
-public class Mazzo implements IMazzo {
+public class Mazzo {
 	public ArrayList<Carta> myMazzo = new ArrayList<Carta>();
 	
 	//costruttore
-	public Mazzo() {
-		
+	public Mazzo() {		
 		for(Seme seme : Seme.values()) {
 			for(Valore valore: Valore.values()) {
 				myMazzo.add(new Carta(valore, seme));
@@ -19,10 +18,6 @@ public class Mazzo implements IMazzo {
 
 	public ArrayList<Carta> getMyMazzo() {
 		return myMazzo;
-	}
-
-	public void setMyMazzo(ArrayList<Carta> mazzo) {
-		this.myMazzo = mazzo;
 	}
 	
 	//mescola il mazzzo
@@ -47,6 +42,36 @@ public class Mazzo implements IMazzo {
 	public void printMazzo() {
 		for(Carta c : myMazzo) {
 			System.out.println(c);
+		}
+	}
+	
+	//
+	public ArrayList<Carta> dammiPrimeTreCarte(){
+		ArrayList<Carta> cards = new ArrayList<Carta>();
+		for(int i = 0; i < 3; i++) {
+			cards.add(myMazzo.remove(0));
+		}
+		return cards;
+	}
+	
+	
+	//in base al numero di giocatori vengono scartate carte deboli dal mazzo ordinato
+	public void scartaCarteDeboli(int giocatori) {
+		if (giocatori == 7) {
+			myMazzo.remove(1);
+			myMazzo.remove(3);
+			myMazzo.remove(11);
+			myMazzo.remove(21);
+			myMazzo.remove(31);
+		}
+		else if (giocatori == 6) {
+			myMazzo.remove(1);
+			myMazzo.remove(11);
+			myMazzo.remove(21);
+			myMazzo.remove(31);
+		}
+		else if (giocatori == 3) {
+			myMazzo.remove(1);
 		}
 	}
 }

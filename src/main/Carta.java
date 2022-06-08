@@ -1,6 +1,6 @@
 package main;
 
-public class Carta implements ICarta {
+public class Carta {
 	private Seme seme;
 	private Valore valore;
 	

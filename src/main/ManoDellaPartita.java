@@ -1,11 +1,12 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class ManoDellaPartita {
 
 	private ArrayList<Giocata> giocate;
-
+	Scanner tastiera = new Scanner(System.in);
 	private Carta briscolaCorrente;
 
 	public ManoDellaPartita(Carta briscolaCorrente) {
@@ -17,13 +18,28 @@ public class ManoDellaPartita {
 	public ArrayList<Giocata> getGiocate() {
 		return giocate;
 	}
-
-	public void gioca(Giocata giocata) {
-		giocate.add(giocata);
+	
+	public void faiUnaGiocata(Giocatore giocatore) {
+		System.out.println(giocatore.getDescrizione() + "e' il tuo turno:");
+		//espongo le carte possibili
+		giocatore.printCards();
+		System.out.println("--------------------------------------------------");
+		int scelta = -1;
+		//sono obbligato a scegliere tra le 3 opzioni
+		while (scelta < 0 || scelta > 2) {
+			System.out.println("Seleziona una carta da giocare:" );
+			if(tastiera.hasNextInt()) {
+				scelta = tastiera.nextInt();
+			}
+		}
+		
+		//prendo la scelta e vado ad aggiungere una nuova giocata nell'array delle giocate
+		giocate.add(new Giocata(giocatore, giocatore.getMyCards().get(scelta)));
 	}
-
-	public Giocata chiudiMano() {
-		// TODO parlare di : interfacce, eccezioni
+	
+	
+	//dopo che sono state raccolte tutte le giocate si calcola il vincitore della mano
+	public Giocatore chiudiMano() {
 		Carta prima = null;
 		Giocata presa = null;
 		int forzaMassima = -1;
@@ -52,7 +68,7 @@ public class ManoDellaPartita {
 				forzaMassima = forza;
 			}
 		}
-		return presa;
+		return presa.getGiocatore();
 	}
 
 	// calcola la forza della carta
@@ -79,7 +95,6 @@ public class ManoDellaPartita {
 		case ASSO:
 			return 9;
 		}
-		// TODO parlare di : interfacce, eccezioni
 		return -1;
 	}
 
