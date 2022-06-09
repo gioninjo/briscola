@@ -1,12 +1,12 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Giocatore {
 
 	private ArrayList<Carta> myCards = new ArrayList<Carta>();
-	private int punteggio = 0;
-	private int squadra;
+	private String nomeSquadra;
 	private String descrizione;
 
 	public Giocatore(String descrizione) {
@@ -20,20 +20,12 @@ public class Giocatore {
 	public ArrayList<Carta> getMyCards() {
 		return myCards;
 	}
-	public int getPunteggio() {
-		return punteggio;
+	public String getNomeSquadra() {
+		return nomeSquadra;
 	}
 	
-	public int getSquadra() {
-		return squadra;
-	}
-	
-	public void setSquadra(int squadra) {
-		this.squadra = squadra;
-	}
-	
-	public void aumentaPunteggio(int p) {
-		this.punteggio += p;
+	public void setSquadra(String squadra) {
+		this.nomeSquadra = squadra;
 	}
 	
 	public void takeCards(ArrayList<Carta> mano) {
@@ -44,8 +36,8 @@ public class Giocatore {
 		myCards.add(carta);
 	}
 	
-	public Carta playACard(int posizione) {
-		return myCards.remove(posizione);
+	public void removeACard(int posizione) {
+		myCards.remove(posizione);
 	}
 	
 	public void printCards() {
@@ -58,7 +50,26 @@ public class Giocatore {
 	
 	@Override
 	public String toString() {
-		return "Giocatore [descrizione=" + descrizione + "]";
+		return "Giocatore " + descrizione;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(descrizione, myCards, nomeSquadra);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Giocatore other = (Giocatore) obj;
+		return Objects.equals(descrizione, other.descrizione) && Objects.equals(myCards, other.myCards)
+				&& Objects.equals(nomeSquadra, other.nomeSquadra);
+	}
+	
 	
 }

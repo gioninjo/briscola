@@ -20,21 +20,20 @@ public class ManoDellaPartita {
 	}
 	
 	public void faiUnaGiocata(Giocatore giocatore) {
-		System.out.println(giocatore.getDescrizione() + "e' il tuo turno:");
+		System.out.println(giocatore.getDescrizione() + "e' il tuo turno(hai " + giocatore.getMyCards().size() + " carte in mano:");
 		//espongo le carte possibili
 		giocatore.printCards();
 		System.out.println("--------------------------------------------------");
 		int scelta = -1;
 		//sono obbligato a scegliere tra le 3 opzioni
-		while (scelta < 0 || scelta > 2) {
+		while (scelta < 0 || scelta > giocatore.getMyCards().size() - 1) {
 			System.out.println("Seleziona una carta da giocare:" );
-			if(tastiera.hasNextInt()) {
-				scelta = tastiera.nextInt();
-			}
+			scelta = tastiera.nextInt();
 		}
 		
 		//prendo la scelta e vado ad aggiungere una nuova giocata nell'array delle giocate
 		giocate.add(new Giocata(giocatore, giocatore.getMyCards().get(scelta)));
+		giocatore.removeACard(scelta);
 	}
 	
 	
@@ -68,6 +67,7 @@ public class ManoDellaPartita {
 				forzaMassima = forza;
 			}
 		}
+		System.out.println("\n\nMano vinta da " + presa.getGiocatore());
 		return presa.getGiocatore();
 	}
 
@@ -128,7 +128,9 @@ public class ManoDellaPartita {
 			return 10;
 		case ASSO:
 			return 11;
+		default:
+			return 0;
 		}
-		return 0;
+
 	}
 }

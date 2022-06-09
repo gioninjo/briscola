@@ -54,24 +54,10 @@ public class Mazzo {
 		return cards;
 	}
 	
-	
-	//in base al numero di giocatori vengono scartate carte deboli dal mazzo ordinato
-	public void scartaCarteDeboli(int giocatori) {
-		if (giocatori == 7) {
-			myMazzo.remove(1);
-			myMazzo.remove(3);
-			myMazzo.remove(11);
-			myMazzo.remove(21);
-			myMazzo.remove(31);
+	public boolean isEmpty() {
+		if(myMazzo.size() == 0) {
+			return true;
 		}
-		else if (giocatori == 6) {
-			myMazzo.remove(1);
-			myMazzo.remove(11);
-			myMazzo.remove(21);
-			myMazzo.remove(31);
-		}
-		else if (giocatori == 3) {
-			myMazzo.remove(1);
-		}
+		return false;
 	}
 }
