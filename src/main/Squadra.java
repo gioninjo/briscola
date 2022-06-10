@@ -10,7 +10,6 @@ public class Squadra {
 	public Squadra(String squadra) {
 		this.nome = squadra;
 		this.punteggio = 0;
-
 		
 	}
 	

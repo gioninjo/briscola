@@ -1,6 +1,8 @@
 package main;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class PartitaBriscola {
@@ -8,8 +10,10 @@ public class PartitaBriscola {
 	private ArrayList<Giocatore> giocatori;
 	private ArrayList<Squadra> squadre;
 	private Mazzo myMazzo;
+	private Carta briscola;
 	// tracciamento mani
 	ArrayList<ManoDellaPartita> storicoMani;
+	
 
 	// costruttore
 	public PartitaBriscola() {
@@ -40,27 +44,57 @@ public class PartitaBriscola {
 
 	// imposto che si può giocare in massimo 8 giocatori e minimo 2
 	public void selezioneGiocatori() {
-		boolean firstTry = true;
+		
 		int n = 0;
-
+		boolean catched = false;
+		boolean firstTry = true;
 		do {
-			if (!firstTry) {
-				System.out.println("Per favore inserire un numero di giocatori valido (minimo 2)");
+			//int buffer = 0;
+			if (!firstTry && !catched) {
+				System.out.println("Per favore inserire un numero di giocatori valido (minimo 2, massimo 8)");
 			}
 			System.out.println("Selezionare il numero di giocatori:");
-			n = tastiera.nextInt();
+			try {
+				n = tastiera.nextInt();
+				catched = false;
+			} catch (InputMismatchException e) {
+				System.out.println("il valore deve essere un numero");
+				catched = true;
+			}
+			//n = buffer;
+			//pulisci scanner
+			tastiera.nextLine();
 			firstTry = false;
 		} while (n > 8 || n < 2);
 
 		for (int i = 1; i < n + 1; i++) {
-			System.out.println("Giocatore " + i + " seleziona un username: ");
-			String descrizione = tastiera.next();
+			String descrizione = "";
+			boolean firstTry2 = true;
+			// se esiste già un giocatore allora richiede l'input
+			do {
+				if(!firstTry2) {
+					System.out.println("Username già in uso, riprovare");
+				}
+				System.out.println("Giocatore " + i + " seleziona un username: ");
+				descrizione = tastiera.nextLine();
+				firstTry2 = false;
+			} while (alreadyExist(descrizione));
 			giocatori.add(new Giocatore(descrizione));
 			System.out.println("---------------------------------------------------------------------");
 
 		}
 	}
-
+	
+	//cerca se esiste un giocatore con la descrizione
+	private boolean alreadyExist(String descrizione) {
+		for(Giocatore giocatore : giocatori) {
+			if(giocatore.getDescrizione().equals(descrizione)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	// la selezione delle squadre
 	public void selezioneSquadre() {
 //		int nsquadre = 0;
@@ -90,7 +124,10 @@ public class PartitaBriscola {
 		String jolly;
 		for (Giocatore giocatore : giocatori) {
 			System.out.println(giocatore + " seleziona la squadra a cui appartieni: ");
-			jolly = tastiera.nextLine();
+			do {
+				jolly = tastiera.nextLine();
+			}
+			while(jolly.equals(""));
 			giocatore.setSquadra(jolly);
 			Squadra buffer = new Squadra(jolly);
 			//se la squadra non è ancora registrata allora la aggiungo alla lista
@@ -103,10 +140,11 @@ public class PartitaBriscola {
 	}
 
 	// grosso metodo che rappresenta una mano
-	private void faiUnaMano(Carta briscolaCorrente) {
-		ManoDellaPartita myMano = new ManoDellaPartita(briscolaCorrente);
+	private void faiUnaMano() throws ValoreInvalidoException {
+		ManoDellaPartita myMano = new ManoDellaPartita(briscola);
 		for (Giocatore giocatore : giocatori) {
 			myMano.faiUnaGiocata(giocatore);
+			System.out.println("\n" + myMano + "\n");
 		}
 		Giocatore vincente = myMano.chiudiMano();
 		int punteggioMano = myMano.calcolaPunteggioMano();
@@ -143,6 +181,7 @@ public class PartitaBriscola {
 		// infine aggiungo la mano allo storico mani
 		storicoMani.add(myMano);
 		
+		//mostro punteggio squadre attuale
 		mostraSquadrePunteggi();
 	}
 
@@ -158,10 +197,10 @@ public class PartitaBriscola {
 
 	// metodo che itera sul metodo faiUnaMano
 	// ti fa giocare tutte le mani possibili
-	public void giocaTutteLeMani(Carta briscola) {
+	public void giocaTutteLeMani() throws ValoreInvalidoException {
 		int nMani = 40 / giocatori.size();
 		for (int i = 0; i < nMani; i++) {
-			faiUnaMano(briscola);
+			faiUnaMano();
 		}
 	}
 
@@ -191,11 +230,11 @@ public class PartitaBriscola {
 				System.out.println(squadra + "\n");
 			}
 		}
-		System.out.println("------------------------------------");
+		System.out.println("\n-----------------------------------\n");
 		// faccio sapere ai giocatori delpla squadra che hanno vinto
 		for (Giocatore giocatore : giocatori) {
 			if (vincente.equals(giocatore.getNomeSquadra())) {
-				System.out.println(giocatore + "la tua squadra ha vinto la partita!!");
+				System.out.println(giocatore + " la tua squadra ha vinto la partita!!\n\n");
 			}
 		}
 	}
@@ -207,7 +246,33 @@ public class PartitaBriscola {
 		}
 		System.out.println("\n\n\n");
 	}
-
+	
+	public void pubblicaMani() {
+		System.out.println("storico delle mani della partita: [press ENTER to continue]\n\n");
+		//aspetta che il giocatore prema invio prima di mostrare lo storico
+		try {
+			System.in.read();
+		} catch (IOException e) {
+			
+		}
+		int count = 1;
+		for(ManoDellaPartita mano : storicoMani) {
+			System.out.println("-----------------------------------------------------");
+			System.out.println(count + ". " + mano);
+			count++;
+		}
+	}
+	
+	//setter briscola
+	public void setBriscola(Carta briscola) {
+		this.briscola = briscola;
+	}
+	
+	//getter scanner
+	public Scanner getTastiera() {
+		return tastiera;
+	}
+	
 	public static void main(String args[]) {
 		PartitaBriscola myPartita = new PartitaBriscola();
 		myPartita.selezioneGiocatori();
@@ -219,13 +284,25 @@ public class PartitaBriscola {
 		myPartita.myMazzo.shuffle();
 		// estraggo la briscola
 		Carta briscola = myPartita.myMazzo.pushACard();
-		System.out.println("La briscola è: " + briscola);
+		myPartita.setBriscola(briscola);
+		//myPartita.myMazzo.printMazzo();
+		System.out.println("La briscola è: " + briscola + "\n\n");
 		// distribuisco 3 carte ad ogni giocatore
 		myPartita.distribuzioneMani();
 		// ora gioco tutte le mani
-		myPartita.giocaTutteLeMani(briscola);
+		try {
+			myPartita.giocaTutteLeMani();
+		} catch (ValoreInvalidoException e) {
+			System.out.println("ERRORE!! ValoreInvalidoException catturata");
+		}
+		
 		//Calcolo la squadra vincente e la mostro in output
 		myPartita.calcolaSquadraVincente();
+		myPartita.pubblicaMani();
+		//chiudo lo scanner
+		myPartita.getTastiera().close();
 
 	}
+
+
 }

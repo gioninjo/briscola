@@ -8,7 +8,16 @@ public class Giocatore {
 	private ArrayList<Carta> myCards = new ArrayList<Carta>();
 	private String nomeSquadra;
 	private String descrizione;
-
+//	private int punteggio;
+//	
+//	public int getPunteggio() {
+//		return punteggio;
+//	}
+//	
+//	public void aumentaPunteggio(int quantita) {
+//		this.punteggio += quantita;
+//	}
+	
 	public Giocatore(String descrizione) {
 		super();
 		this.descrizione = descrizione;

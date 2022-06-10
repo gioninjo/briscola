@@ -40,8 +40,10 @@ public class Mazzo {
 	}
 	
 	public void printMazzo() {
+		int count = 1;
 		for(Carta c : myMazzo) {
-			System.out.println(c);
+			System.out.println(count + ". " + c);
+			count++;
 		}
 	}
 	

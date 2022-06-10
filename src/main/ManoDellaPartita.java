@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ManoDellaPartita {
@@ -9,6 +10,11 @@ public class ManoDellaPartita {
 	Scanner tastiera = new Scanner(System.in);
 	private Carta briscolaCorrente;
 
+	//getter scanner
+	public Scanner getTastiera() {
+		return tastiera;
+	}
+	
 	public ManoDellaPartita(Carta briscolaCorrente) {
 		super();
 		giocate = new ArrayList<>();
@@ -20,16 +26,37 @@ public class ManoDellaPartita {
 	}
 	
 	public void faiUnaGiocata(Giocatore giocatore) {
-		System.out.println(giocatore.getDescrizione() + "e' il tuo turno(hai " + giocatore.getMyCards().size() + " carte in mano:");
+		System.out.println(giocatore.getDescrizione() + " e' il tuo turno(hai " + giocatore.getMyCards().size() + " carte in mano:");
 		//espongo le carte possibili
 		giocatore.printCards();
 		System.out.println("--------------------------------------------------");
 		int scelta = -1;
-		//sono obbligato a scegliere tra le 3 opzioni
-		while (scelta < 0 || scelta > giocatore.getMyCards().size() - 1) {
-			System.out.println("Seleziona una carta da giocare:" );
-			scelta = tastiera.nextInt();
-		}
+		boolean firstTry = true;
+		boolean catched = false;
+//		//sono obbligato a scegliere tra le 3 opzioni
+//		while (scelta < 0 || scelta > giocatore.getMyCards().size() - 1) {
+//			System.out.println("Seleziona una carta da giocare:" );
+//			scelta = tastiera.nextInt();
+//		}
+		do {
+			//int buffer = 0;
+			if (!firstTry && !catched) {
+				System.out.println("Per favore inserire un numero di carta valido!");
+			}
+			System.out.println("Selezionare una carta da giocare:");
+			try {
+				scelta = tastiera.nextInt();
+				catched = false;
+			} catch (InputMismatchException e) {
+				System.out.println("il valore deve essere un numero");
+				catched = true;
+			}
+			//n = buffer;
+			//pulisci scanner
+			tastiera.nextLine();
+			firstTry = false;
+		} while (scelta < 0 || scelta > giocatore.getMyCards().size() - 1);
+		
 		
 		//prendo la scelta e vado ad aggiungere una nuova giocata nell'array delle giocate
 		giocate.add(new Giocata(giocatore, giocatore.getMyCards().get(scelta)));
@@ -38,7 +65,7 @@ public class ManoDellaPartita {
 	
 	
 	//dopo che sono state raccolte tutte le giocate si calcola il vincitore della mano
-	public Giocatore chiudiMano() {
+	public Giocatore chiudiMano() throws ValoreInvalidoException {
 		Carta prima = null;
 		Giocata presa = null;
 		int forzaMassima = -1;
@@ -72,7 +99,7 @@ public class ManoDellaPartita {
 	}
 
 	// calcola la forza della carta
-	private int calcolaForza(Carta carta) {
+	private int calcolaForza(Carta carta) throws ValoreInvalidoException {
 		switch (carta.getValore()) {
 		case DUE:
 			return 0;
@@ -94,11 +121,12 @@ public class ManoDellaPartita {
 			return 8;
 		case ASSO:
 			return 9;
+		default:
+			throw new ValoreInvalidoException("il valore della carta non è gestito");
 		}
-		return -1;
 	}
 
-	public int calcolaPunteggioMano() {
+	public int calcolaPunteggioMano() throws ValoreInvalidoException {
 		int punteggio = 0;
 		for (Giocata giocata : giocate) {
 			punteggio += calcolaPunteggioCarta(giocata.getCarta());
@@ -106,7 +134,7 @@ public class ManoDellaPartita {
 		return punteggio;
 	}
 
-	private int calcolaPunteggioCarta(Carta carta) {
+	private int calcolaPunteggioCarta(Carta carta) throws ValoreInvalidoException {
 		switch (carta.getValore()) {
 		case DUE:
 			return 0;
@@ -129,8 +157,19 @@ public class ManoDellaPartita {
 		case ASSO:
 			return 11;
 		default:
-			return 0;
+			throw new ValoreInvalidoException("il valore della carta non è gestito");
 		}
 
 	}
+
+	@Override
+	public String toString() {
+		String mano = "giocate della mano: \n\n";
+		for(Giocata giocata : giocate) {
+			mano += giocata + "\n";
+		}
+		System.out.println();
+		return mano;
+	}
+	
 }
